@@ -1,6 +1,8 @@
 ﻿using Microsoft.OpenApi.Models;
 using Serilog;
-using VersionChecker.Api.Application;
+using VersionChecker.Api.Areas.DotNet;
+using VersionChecker.Extensions.DotNet.Model;
+using VersionChecker.Infrastructure;
 
 namespace VersionChecker.Api
 {
@@ -11,7 +13,7 @@ namespace VersionChecker.Api
             services.AddControllers();                
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "VersionChecker.Api", Version = "v1" }));
 
-            services.AddScoped<IRepository, Repository>();
+            services.AddScoped<IRepository<DotNetVersionDetail>, DotNetRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

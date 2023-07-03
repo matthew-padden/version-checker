@@ -1,0 +1,21 @@
+{
+  "refreshDateTime": "2023-07-03T17:00:00",
+  "details": [
+    {
+      "version": "7",
+      "releaseDate": "2022-11-08T00:00:00",
+      "endOfSupportDate": null,
+      "additionalProperties": {
+        "tfm": "net7.0"
+      }
+    },
+    {
+      "version": "6",
+      "releaseDate": "2021-11-09T00:00:00",
+      "endOfSupportDate": "2024-11-12T00:00:00",
+      "additionalProperties": {
+        "tfm": "net6.0"
+      }
+    }
+  ]
+}
