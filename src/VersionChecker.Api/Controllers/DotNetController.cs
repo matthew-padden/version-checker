@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using VersionChecker.Api.Application;
 using VersionChecker.Api.Model;
+using VersionChecker.Api.Queries;
 
 namespace VersionChecker.Api.Controllers
 {
@@ -8,31 +10,28 @@ namespace VersionChecker.Api.Controllers
     [ApiController]
     public class DotNetController : ControllerBase
     {
-        private readonly IConfiguration configuration;        
+        private readonly IRepository repository;
 
-        public DotNetController(IConfiguration configuration)
+        public DotNetController(IRepository repository)
         {
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get()
-        {
-            var filename = configuration["VersionFileNames:DotNet"];
-            var dotNetVersions = await ReadJsonFileAsync(filename);
-            return Ok(dotNetVersions);
-        }
+        public async Task<IActionResult> Get() => 
+            Ok(await repository.GetAsync());
 
-        private async Task<List<VersionInfo>> ReadJsonFileAsync(string filePath)
+        [HttpGet("{version}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetVersion(string version)
         {
-            using FileStream openStream = System.IO.File.OpenRead(filePath);
-            return await JsonSerializer.DeserializeAsync<List<VersionInfo>>(
-                openStream,
-                options: new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+            var dotNetVersion = await repository.GetAsync(version);
+            if (dotNetVersion == null)
+                return BadRequest();
+
+            return Ok(new VersionResponse(dotNetVersion.IsInSupport));
         }
     }
 }
