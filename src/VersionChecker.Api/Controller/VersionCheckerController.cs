@@ -28,12 +28,12 @@ namespace VersionChecker.Api.Controller
             return Ok(match);
         }
 
-        protected async Task<IActionResult> GetByAdditionalProperty(string property, string value)
+        protected async Task<IActionResult> GetByAdditionalProperty(KeyValuePair<string, string> property)
         {
-            if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(value))
-                return Ok(await repository.GetAsync());
+            if (property.Key is null || property.Value is null)
+                return Ok(await repository.GetAsync());                
 
-            var dotNetVersion = await repository.GetByAdditionalPropertyAsync(property, value);
+            var dotNetVersion = await repository.GetByAdditionalPropertyAsync(property);
             if (dotNetVersion == null)
                 return BadRequest();
 

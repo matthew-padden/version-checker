@@ -35,6 +35,6 @@ namespace VersionChecker.Api.Areas.DotNet
         [ProducesResponseType(typeof(VersionDetail), StatusCodes.Status200OK)]        
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Find([FromQuery] string tfm)
-            => await GetByAdditionalProperty("tfm", tfm);
+            => await GetByAdditionalProperty(new KeyValuePair<string, string>("tfm", tfm));
     }
 }

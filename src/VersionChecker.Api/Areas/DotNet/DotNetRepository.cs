@@ -22,10 +22,10 @@ namespace VersionChecker.Api.Areas.DotNet
         }
 
 
-        public async Task<DotNetVersionDetail> GetByAdditionalPropertyAsync(string property, string value)
+        public async Task<DotNetVersionDetail> GetByAdditionalPropertyAsync(KeyValuePair<string, string> property)
         {
             var versionDetails = await GetAsync();
-            return versionDetails.FirstOrDefault(det => det.AdditionalProperties.ContainsKey(property) && det.AdditionalProperties[property] == value);
+            return versionDetails.FirstOrDefault(det => det.AdditionalProperties.ContainsKey(property.Key) && det.AdditionalProperties[property.Key] == property.Value);
         }
     }
 }

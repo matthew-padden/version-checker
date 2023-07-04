@@ -10,7 +10,7 @@
 
     public abstract class VersionDetail : IVersionDetail
     {
-        public VersionDetail()
+        protected VersionDetail()
         {
             AdditionalProperties = new Dictionary<string, string>();
         }
