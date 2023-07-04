@@ -1,6 +1,6 @@
 ﻿using VersionChecker.Api.Model;
 
-namespace VersionChecker.Api.Areas.DotNet.Models
+namespace VersionChecker.Api.Areas.DotNet
 {
     public class DotNetVersionDetail : VersionDetail
     {

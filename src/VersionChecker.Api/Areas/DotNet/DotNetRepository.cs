@@ -1,5 +1,4 @@
-﻿using VersionChecker.Api.Areas.DotNet.Models;
-using VersionChecker.Api.Infrastructure;
+﻿using VersionChecker.Api.Infrastructure;
 using VersionChecker.Infrastructure;
 
 namespace VersionChecker.Api.Areas.DotNet
@@ -18,8 +17,8 @@ namespace VersionChecker.Api.Areas.DotNet
             var versionInfo = await FileReader.ReadJson<DotNetVersionDetail>(configuration["VersionFileNames:DotNet"]);
             return versionInfo.Details;
 
-            /// Possibility of scraping the data we need from https://learn.microsoft.com/en-us/dotnet/standard/frameworks but microsoft doesn
-            /// not allow scraping from its websites without written consent.
+            // Possibility of scraping the data we need from https://learn.microsoft.com/en-us/dotnet/standard/frameworks but microsoft doesn
+            // not allow scraping from its websites without written consent.
         }
 
 

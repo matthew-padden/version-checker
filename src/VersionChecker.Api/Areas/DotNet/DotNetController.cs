@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VersionChecker.Api.Areas.DotNet.Models;
 using VersionChecker.Api.Controller;
 using VersionChecker.Api.Model;
 using VersionChecker.Infrastructure;
@@ -37,7 +36,5 @@ namespace VersionChecker.Api.Areas.DotNet
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Find([FromQuery] string tfm)
             => await GetByAdditionalProperty("tfm", tfm);
-
-        
     }
 }

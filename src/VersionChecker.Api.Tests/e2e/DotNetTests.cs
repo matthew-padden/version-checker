@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
-using VersionChecker.Api.Areas.DotNet.Models;
+using VersionChecker.Api.Areas.DotNet;
 using VersionChecker.Api.Model;
 using Xunit;
 
-namespace VersionChecker.Api.Tests.EndToEnd
+namespace VersionChecker.Api.Tests.e2e
 {
     public class DotNetTests : IClassFixture<TestClientProvider>, IDisposable
     {
@@ -142,13 +142,7 @@ namespace VersionChecker.Api.Tests.EndToEnd
 
         private void WriteVersionsFile(string path)
         {
-            var json = JsonSerializer.Serialize(
-                DotNetVersionInfo,
-                options: new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                });
-
+            var json = JsonSerializer.Serialize(DotNetVersionInfo, options: jsonSerializerOptions);
             File.WriteAllText(path, json);
         }
 
@@ -160,8 +154,13 @@ namespace VersionChecker.Api.Tests.EndToEnd
 
         public void Dispose()
         {
-            DeleteVersionsFile(configuration["VersionFileNames:DotNet"]);
+            Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            DeleteVersionsFile(configuration["VersionFileNames:DotNet"]);
         }
     }
 }
