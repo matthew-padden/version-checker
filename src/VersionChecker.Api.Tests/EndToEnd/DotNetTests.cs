@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
-using VersionChecker.Extensions.DotNet.Model;
+using VersionChecker.Api.Areas.DotNet.Models;
 using VersionChecker.Api.Model;
 using Xunit;
 
@@ -23,31 +23,34 @@ namespace VersionChecker.Api.Tests.EndToEnd
             Details = new List<DotNetVersionDetail>
             {
                 new DotNetVersionDetail {
-                    Version = ".NET 7",
+                    Version = "7",
                     ReleaseDate = new DateTime(2022, 11, 08),                    
                     EndOfSupportDate = null,
                     AdditionalProperties = new Dictionary<string, string>
                     {
+                        { "targetFramework", ".NET 7" },
                         { "tfm", "net7.0" }
                     }
                 },
                 new DotNetVersionDetail
                 {
-                    Version = ".NET 6 (LTS)",
+                    Version = "6",
                     ReleaseDate = new DateTime(2021, 11, 09),
                     EndOfSupportDate = new DateTime(2024, 11, 12),
                     AdditionalProperties = new Dictionary<string, string>
                     {
+                        { "targetFramework", ".NET 6 (LTS)" },
                         { "tfm", "net6.0" }
                     }
                 },
                 new DotNetVersionDetail
                 {
-                    Version = ".NET 5",
+                    Version = "5",
                     ReleaseDate = new DateTime(2020, 10, 08),
                     EndOfSupportDate = new DateTime(2022, 05, 10),
                     AdditionalProperties = new Dictionary<string, string>
                     {
+                        { "targetFramework", ".NET 5" },
                         { "tfm", "net5.0" }
                     }
                 }
@@ -58,7 +61,6 @@ namespace VersionChecker.Api.Tests.EndToEnd
         {
             this.client = clientProvider.Client;
             this.configuration = clientProvider.Configuration;
-
             WriteVersionsFile(configuration["VersionFileNames:DotNet"]);
         }
 
@@ -71,10 +73,8 @@ namespace VersionChecker.Api.Tests.EndToEnd
         }
 
         [Fact]
-        public async Task Get_DotNet_ReturnVersionInfo()
+        public async Task Get_DotNet_ReturnVersionDetails()
         {
-            var path = configuration["VersionFileNames:DotNet"];
-
             var request = new HttpRequestMessage(HttpMethod.Get, "/dotnet");
             var response = await client.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
@@ -95,12 +95,26 @@ namespace VersionChecker.Api.Tests.EndToEnd
         [Fact]
         public async Task Get_DotNetVersion_Exists_ReturnSuccess()
         {
+            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/dotnet/7"));
+            Assert.True(response.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task Get_DotNetVersion_DoesNotExists_ReturnBadRequest()
+        {
+            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/dotnet/101"));
+            Assert.True(response.StatusCode == HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task Get_DotNetVersionByTfm_Exists_ReturnSuccess()
+        {
             var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/dotnet?tfm=net7.0"));
             Assert.True(response.IsSuccessStatusCode);
         }
 
         [Fact]
-        public async Task Get_DotNetVersion_NotExist_ReturnsBadRequest()
+        public async Task Get_DotNetVersionByTfm_NotExist_ReturnsBadRequest()
         {
             var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/dotnet?tfm=net45.0"));
             Assert.True(response.StatusCode == HttpStatusCode.BadRequest);
@@ -138,12 +152,16 @@ namespace VersionChecker.Api.Tests.EndToEnd
             File.WriteAllText(path, json);
         }
 
-        private void DeleteVersionsFile(string path)
-            => File.Delete(path);
+        private static void DeleteVersionsFile(string path)
+        {
+              if (File.Exists(path))
+                File.Delete(path);
+        }
 
         public void Dispose()
         {
             DeleteVersionsFile(configuration["VersionFileNames:DotNet"]);
+            GC.SuppressFinalize(this);
         }
     }
 }

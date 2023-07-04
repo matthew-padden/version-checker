@@ -1,39 +1,43 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VersionChecker.Api.Areas.DotNet.Models;
+using VersionChecker.Api.Controller;
 using VersionChecker.Api.Model;
-using VersionChecker.Extensions.DotNet.Model;
 using VersionChecker.Infrastructure;
 
 namespace VersionChecker.Api.Areas.DotNet
 {
     [Route("[controller]")]
     [ApiController]
-    public class DotNetController : ControllerBase
+    public class DotNetController : VersionCheckerController<DotNetVersionDetail>
     {
-        protected readonly IRepository<DotNetVersionDetail> repository;
 
         public DotNetController(IRepository<DotNetVersionDetail> repository)
-        {
-            this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        }
+            : base(repository) { }
 
         /// <summary>
-        /// 
+        /// Get the version details for a specific version.
         /// </summary>
-        /// <param name="tfm">Target Framework Moniker</param>
-        /// <returns></returns>
-        [HttpGet]
+        /// <param name="version">The version number to retrieve.</param>
+        /// <returns>Details of the specific version.</returns>
+        [HttpGet("{version}")]
         [ProducesResponseType(typeof(VersionDetail), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get([FromQuery] string tfm)
-        {
-            if (string.IsNullOrEmpty(tfm))
-                return Ok(await repository.GetAsync());
+        public async Task<IActionResult> Get(string version)
+            => await GetVersion(version);
 
-            var dotNetVersion = await repository.GetByAdditionalPropertyAsync("tfm", tfm);
-            if (dotNetVersion == null)
-                return BadRequest();
 
-            return Ok(dotNetVersion);
-        }
+        /// <summary>
+        /// Get the version details.
+        /// </summary>
+        /// <param name="tfm">Target framework moniker</param>
+        /// <returns>Version details</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<VersionDetail>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(VersionDetail), StatusCodes.Status200OK)]        
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Find([FromQuery] string tfm)
+            => await GetByAdditionalProperty("tfm", tfm);
+
+        
     }
 }
