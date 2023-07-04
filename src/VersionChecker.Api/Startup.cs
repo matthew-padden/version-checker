@@ -1,7 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
 using Serilog;
 using VersionChecker.Api.Areas.DotNet;
-using VersionChecker.Extensions.DotNet.Model;
+using VersionChecker.Api.Areas.DotNet.Models;
 using VersionChecker.Infrastructure;
 
 namespace VersionChecker.Api
@@ -10,6 +10,7 @@ namespace VersionChecker.Api
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting(options => options.LowercaseUrls = true);
             services.AddControllers();                
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "VersionChecker.Api", Version = "v1" }));
 
@@ -34,12 +35,7 @@ namespace VersionChecker.Api
             }
 
             app.UseHttpsRedirection();
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VersionChecker.Api v1"));
-
             app.UseRouting();
-
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
